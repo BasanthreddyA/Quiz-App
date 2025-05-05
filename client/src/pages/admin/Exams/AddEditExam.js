@@ -1,5 +1,6 @@
 import { Col, Form, message, Row, Select, Table } from "antd";
 import React, { useEffect } from "react";
+
 import {
   addExam,
   deleteQuestionById,
@@ -13,6 +14,9 @@ import { useDispatch } from "react-redux";
 import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
 import { Tabs } from "antd";
 import AddEditQuestion from "./AddEditQuestion";
+import UploadUsersModal from "../../../components/UploadUsersModal";
+import UploadQuestionsModal from "../../../components/UploadQuestionsModal";
+
 const { TabPane } = Tabs;
 
 function AddEditExam() {
@@ -22,6 +26,9 @@ function AddEditExam() {
   const [showAddEditQuestionModal, setShowAddEditQuestionModal] =
     React.useState(false);
   const [selectedQuestion, setSelectedQuestion] = React.useState(null);
+  const [showUploadModal, setShowUploadModal] = React.useState(false);
+  const [showUploadQuestionsModal, setShowUploadQuestionsModal] = React.useState(false);
+
   const params = useParams();
   const onFinish = async (values) => {
     try {
@@ -200,7 +207,7 @@ function AddEditExam() {
             </TabPane>
             {params.id && (
               <TabPane tab="Questions" key="2">
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <button
                     className="primary-outlined-btn"
                     type="button"
@@ -208,14 +215,32 @@ function AddEditExam() {
                   >
                     Add Question
                   </button>
+                  <button
+                  className="primary-outlined-btn"
+                  type="button"
+                  onClick={() => setShowUploadQuestionsModal(true)}>
+                    Upload Questions</button>
                 </div>
-
                 <Table
                   columns={questionsColumns}
                   dataSource={examData?.questions || []}
                 />
               </TabPane>
-            )}
+              )}
+              {params.id && (
+                <TabPane tab="Add Users" key="3">
+                <div className="flex justify-end">
+                  <button
+                    className="primary-outlined-btn"
+                    type="button"
+                    onClick={() => setShowUploadModal(true)}>
+                    Add Users
+                  </button>
+                </div>
+              </TabPane>
+              )}
+                
+            
           </Tabs>
         </Form>
       )}
@@ -230,6 +255,18 @@ function AddEditExam() {
           setSelectedQuestion={setSelectedQuestion}
         />
       )}
+      <UploadUsersModal
+      visible={showUploadModal}
+      setVisible={setShowUploadModal}
+      examId={params.id}
+      />
+      <UploadQuestionsModal
+      visible={showUploadQuestionsModal}
+      setVisible={setShowUploadQuestionsModal}
+      examId={params.id}
+      refreshData={getExamData}
+      />
+
     </div>
   );
 }

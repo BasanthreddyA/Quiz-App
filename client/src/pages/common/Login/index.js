@@ -1,13 +1,18 @@
 import { Form, message } from "antd";
 import React from "react";
 import { useDispatch } from "react-redux";
+import { useEffect ,useState} from "react";
 import { Link } from "react-router-dom";
 import { loginUser } from "../../../apicalls/users";
 import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
 
 function Login() {
   const dispatch = useDispatch();
+  const [form] = Form.useForm(); 
+
+
   const onFinish = async (values) => {
+   
     try {
       dispatch(ShowLoading());
       const response = await loginUser(values);
@@ -24,6 +29,9 @@ function Login() {
       message.error(error.message);
     }
   };
+  useEffect(() => {
+    form.resetFields();
+  }, []);
 
   return (
     <div className="flex justify-center items-center h-screen w-screen bg-primary">
@@ -34,7 +42,7 @@ function Login() {
             
           </div>
           <div className="divider"></div>
-          <Form layout="vertical" className="mt-2" onFinish={onFinish}>
+          <Form layout="vertical" className="mt-2" onFinish={onFinish} form={form}>
             <Form.Item name="email" label="Email">
               <input type="text" />
             </Form.Item>

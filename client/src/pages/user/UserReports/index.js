@@ -8,13 +8,15 @@ import { useEffect } from "react";
 import moment from "moment";
 
 function UserReports() {
+  console.log('hasdhashgashgasgs');
+  
   const [reportsData, setReportsData] = React.useState([]);
   const dispatch = useDispatch();
   const columns = [
     {
       title: "Exam Name",
       dataIndex: "examName",
-      render: (text, record) => <>{record.exam.name}</>,
+      render: (text, record) => <>{record.exam?.name}</>,
     },
     {
       title: "Date",
@@ -26,22 +28,22 @@ function UserReports() {
     {
       title: "Total Marks",
       dataIndex: "totalQuestions",
-      render: (text, record) => <>{record.exam.totalMarks}</>,
+      render: (text, record) => <>{record.exam?.totalMarks}</>,
     },
     {
       title: "Passing Marks",
       dataIndex: "correctAnswers",
-      render: (text, record) => <>{record.exam.passingMarks}</>,
+      render: (text, record) => <>{record.exam?.passingMarks}</>,
     },
     {
       title: "Obtained Marks",
       dataIndex: "correctAnswers",
-      render: (text, record) => <>{record.result.correctAnswers.length}</>,
+      render: (text, record) => <>{record.result?.correctAnswers.length}</>,
     },
     {
       title: "Verdict",
       dataIndex: "verdict",
-      render: (text, record) => <>{record.result.verdict}</>,
+      render: (text, record) => <>{record.result?.verdict}</>,
     },
   ];
 
@@ -69,7 +71,7 @@ function UserReports() {
     <div>
       <PageTitle title="Reports" />
       <div className="divider"></div>
-      <Table columns={columns} dataSource={reportsData} />
+      <Table columns={columns} dataSource={reportsData} rowKey="_id" />
     </div>
   );
 }

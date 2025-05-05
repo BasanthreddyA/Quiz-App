@@ -165,5 +165,85 @@ router.post("/delete-question-in-exam", authMiddleware, async (req, res) => {
      }
 });
 
+// bulk upload questions to exam from CSV
+router.post("/:examId/upload-questions", authMiddleware, async (req, res) => {
+  try {
+    const { questions, examId } = req.body;
+
+    if (!Array.isArray(questions) || !examId) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid request format. 'questions' and 'examId' are required.",
+      });
+    }
+
+    // Format and validate each question
+    const formattedQuestions = questions.map((q) => {
+      const options = {
+        A: q.option1,
+        B: q.option2,
+        C: q.option3,
+        D: q.option4,
+      };
+
+      return {
+        name: q.question,
+        correctOption: ["A", "B", "C", "D"][parseInt(q.correctOption) - 1],
+        options,
+        exam: examId,
+      };
+    });
+
+    const insertedQuestions = await Question.insertMany(formattedQuestions);
+
+    const exam = await Exam.findById(examId);
+    insertedQuestions.forEach((q) => exam.questions.push(q._id));
+    await exam.save();
+
+    res.send({
+      success: true,
+      message: "Questions uploaded successfully",
+      data: insertedQuestions,
+    });
+  } catch (error) {
+    console.error("Upload questions error:", error);
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// router.post("/:examId/upload-questions", authMiddleware, async (req, res) => {
+//   try {
+//     const examId = req.params.examId;
+//     const questions = req.body.questions;
+
+//     for (let q of questions) {
+//       const newQuestion = new Question({
+//         name: q.question,
+//         options: {
+//           A: q.option1,
+//           B: q.option2,
+//           C: q.option3,
+//           D: q.option4,
+//         },
+//         correctOption: ['A', 'B', 'C', 'D'][q.correctOption - 1],
+//         exam: examId,
+//       });
+//       await newQuestion.save();
+
+//       await Exam.findByIdAndUpdate(examId, {
+//         $push: { questions: newQuestion._id },
+//       });
+//     }
+
+//     res.send({ success: true, message: "Questions uploaded successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ success: false, message: "Something went wrong" });
+//   }
+// });
+
 
 module.exports = router;

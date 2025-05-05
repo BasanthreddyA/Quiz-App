@@ -22,6 +22,7 @@ export const getAllReports = async (filters) => {
 
 // get all reports by user
 export const getAllReportsByUser = async () => {
+    console.log('here s jte api call')
     try {
         const response = await axiosInstance.post("/api/reports/get-all-reports-by-user");
         return response.data;
